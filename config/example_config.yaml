@@ -1,0 +1,106 @@
+# RobotVLA Configuration Example
+# This file demonstrates how to configure the RobotVLA system
+
+# Vision model configuration
+vision:
+  model_type: "clip"                    # Options: clip, dinov2, huggingface, custom
+  model_name: "ViT-B/32"               # Model identifier or path
+  pretrained: true                      # Use pretrained weights
+  device: "auto"                        # Device: auto, cpu, cuda, cuda:0, etc.
+  batch_size: 1                         # Batch size for processing
+  image_size: 224                       # Input image size
+  normalize: true                       # Normalize inputs
+  feature_dim: null                     # Output feature dimension (auto-detect if null)
+  custom_config: {}                     # Model-specific configuration
+
+# Language model configuration  
+language:
+  model_type: "huggingface"             # Options: huggingface, openai, rule_based
+  model_name: "microsoft/DialoGPT-medium"  # Model name or path
+  device: "auto"                        # Device to run on
+  
+  # Generation parameters
+  max_length: 512                       # Maximum sequence length
+  temperature: 0.1                      # Generation temperature
+  top_p: 0.9                           # Top-p sampling
+  do_sample: false                     # Whether to use sampling
+  
+  # Function calling
+  enable_function_calling: true         # Enable function calling
+  max_function_calls: 5                # Max function calls per instruction
+  
+  # Context management
+  context_window: 4096                 # Context window size
+  memory_size: 10                      # Previous interactions to remember
+
+# Robot configurations (can have multiple robots)
+robots:
+  - robot_id: "widowx_robot"
+    robot_type: "widowx"
+    connection_type: "remote"           # Options: local, remote, simulation
+    
+    # Connection parameters
+    host: "192.168.1.100"
+    port: 8080
+    device_path: null
+    
+    # Robot capabilities
+    dof: 7                             # Degrees of freedom
+    has_gripper: true                  # Whether robot has gripper
+    workspace_bounds:                  # Workspace limits
+      - [-0.5, 0.5]                   # X bounds [min, max]
+      - [-0.5, 0.5]                   # Y bounds [min, max] 
+      - [0.0, 0.8]                    # Z bounds [min, max]
+    
+    # Control parameters
+    max_velocity: 1.0                  # Maximum velocity limit
+    max_acceleration: 2.0              # Maximum acceleration limit
+    safety_limits:
+      max_force: 50.0                 # Maximum force (N)
+      workspace_violation_threshold: 0.05
+    
+    # Function registration
+    function_registry_path: "robots/widowx/functions.yaml"
+    custom_functions: {}
+
+  - robot_id: "franka_robot"
+    robot_type: "franka"
+    connection_type: "local"
+    device_path: "/dev/ttyUSB0"
+    dof: 7
+    has_gripper: true
+    max_velocity: 0.5
+    max_acceleration: 1.0
+    safety_limits:
+      max_force: 30.0
+      joint_limits_buffer: 0.1
+
+# System settings
+log_level: "INFO"                      # Logging level: DEBUG, INFO, WARNING, ERROR
+log_file: "logs/robotvla.log"         # Log file path (null for no file logging)
+
+# Performance settings
+num_workers: 4                        # Number of worker threads
+enable_caching: true                  # Enable feature caching
+cache_size: 1000                      # Cache size limit
+
+# Training configuration (optional)
+training: null
+  # Uncomment and configure for training mode
+  # data_path: "data/training"
+  # validation_split: 0.1
+  # batch_size: 8
+  # learning_rate: 0.0001
+  # num_epochs: 10
+  # weight_decay: 0.01
+  # optimizer: "adamw"
+  # scheduler: "cosine"
+  # warmup_steps: 1000
+  # save_interval: 1000
+  # max_checkpoints: 5
+  # use_amp: true
+  # gradient_clip: 1.0
+
+# Advanced settings
+debug_mode: false                     # Enable debug mode
+profiling: false                      # Enable performance profiling 
